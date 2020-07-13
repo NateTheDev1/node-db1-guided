@@ -48,7 +48,22 @@ router.post("/", (req, res) => {
     });
 });
 
-router.put("/:id", (req, res) => {});
+router.put("/:id", (req, res) => {
+  const changes = req.body;
+  db("posts")
+    .where({ id: req.params.id })
+    .update(changes)
+    .then((count) => {
+      if (count > 0) {
+        res.status(200).json({ data: count });
+      } else {
+        res.status(404).json({ message: "there were no records to update" });
+      }
+    })
+    .catch((err) => {
+      handleError(err, res);
+    });
+});
 
 router.delete("/:id", (req, res) => {
   db("posts")
