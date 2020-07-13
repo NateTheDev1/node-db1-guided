@@ -36,9 +36,12 @@ router.post("/", (req, res) => {
 
   db("posts")
     .insert(postData, "id")
-    .returning("id")
-    .then((post) => {
-      res.status(200).json({ data: post });
+    .then((ids) => {
+      db("posts")
+        .where({ id: ids[0] })
+        .then((post) => {
+          res.status(200).json({ data: post[0] });
+        });
     })
     .catch((err) => {
       handleError(err, res);
