@@ -50,7 +50,21 @@ router.post("/", (req, res) => {
 
 router.put("/:id", (req, res) => {});
 
-router.delete("/:id", (req, res) => {});
+router.delete("/:id", (req, res) => {
+  db("posts")
+    .where({ id: req.params.id })
+    .del()
+    .then((count) => {
+      if (count > 0) {
+        res.status(200).json({ data: count });
+      } else {
+        res.status(404).json({ message: "there were no records to delete" });
+      }
+    })
+    .catch((err) => {
+      handleError(err, res);
+    });
+});
 
 function handleError(error, res) {
   res.status(500).json({ message: error.message });
