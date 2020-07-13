@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
       res.status(200).json({ data: posts });
     })
     .catch((err) => {
-      handleError();
+      handleError(err, res);
     });
 });
 
@@ -20,21 +20,36 @@ router.get("/:id", (req, res) => {
   db.select("*")
     .from("posts")
     .where({ id: req.params.id })
+    .first()
     .then((post) => {
       res.status(200).json({ data: post });
     })
     .catch((err) => {
-      handleError();
+      handleError(err);
     });
 });
 
-router.post("/", (req, res) => {});
+router.post("/", (req, res) => {
+  const postData = req.body;
+
+  //validate
+
+  db("posts")
+    .insert(postData, "id")
+    .returning("id")
+    .then((post) => {
+      res.status(200).json({ data: post });
+    })
+    .catch((err) => {
+      handleError(err, res);
+    });
+});
 
 router.put("/:id", (req, res) => {});
 
 router.delete("/:id", (req, res) => {});
 
-function handleError(err) {
+function handleError(error, res) {
   res.status(500).json({ message: error.message });
 }
 
